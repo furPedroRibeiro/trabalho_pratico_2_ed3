@@ -1,0 +1,12 @@
+{
+  "files.associations": {
+    ".env.*": "dotenv",
+    ".prettierrc": "json",
+    "*.css": "css",
+    ".dev.vars": "dotenv",
+    "string.h": "c",
+    "createfiles.h": "c",
+    "auxiliar.h": "c",
+    "stdint.h": "c"
+  }
+}
