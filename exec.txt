@@ -2,9 +2,9 @@
 
 2 dados.csv pessoas.bin indice.bin
 
-3 pessoas4.bin
+3 pessoas.bin
 
-4 pessoas4.bin indice4.bin 1
+4 pessoas.bin indice.bin 1
 1 idPessoa=96
 
 5 nao_existe.bin indice.bin 1
@@ -22,10 +22,21 @@
 2 645, "VITORIA PRADO CAMPOS", NULO, "VIVICA"
 3 646, NULO, 19, "THAAAISSL"
 
+7 pessoas.bin indice.bin 5
+1 idPessoa=268 idPessoa=1234
+2 idadePessoa=NULO idadePessoa=18
+3 nomePessoa=NULO nomePessoa="FANTASMA"
+4 nomePessoa="NAOEXISTE" idPessoa=1
+5 nomeUsuario="AFERREIRA" nomeUsuario="ANAFER"
+
 8 segue.csv arquivoSaida.bin
 8 naoExiste.csv arquivoSaida.bin
 
 9 arquivoSaida.bin segueOrdenado.bin
+
+10 pessoas.bin indice.bin segueOrdenado.bin 2
+1 idPessoa=333
+2 idadePessoa=21
 
 
 no trabalho prático 1:

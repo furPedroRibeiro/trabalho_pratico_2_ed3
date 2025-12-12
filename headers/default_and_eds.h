@@ -25,6 +25,13 @@ typedef struct registro{
   struct registro *proxRegistro;
 } registro;
 
+//estrutura de dados do tipo lista duplamente encadeada para armazenar os registros do arquivo de índice antes de inseri-lo, é duplamente encadeada pois na hora da inserção é necessário inserir um registro no meio de outros registros, necessitando assim que seja verificado o nó anterior e o próximo da lista(talvez na implementação da inserção seja observado que a lista não tem necessidade de ser duplamente encadeada, mas para maior eficiência no futuro, é duplamente encadeada desde já) 
+typedef struct indice{
+  int idPessoa;
+  long int byteOffset;
+  struct indice *proxIndice;
+  struct indice *antIndice;
+} indice;
 
 //estrutura de dados do tipo lista duplamente encadeada para armazenar os campos encontrados na busca
 typedef struct resultadoBusca{
@@ -40,10 +47,6 @@ typedef struct cabecalhoPessoa{
   int quantidadeRemovidos;
   long int proxByteoffset;
 } cabecalhoPessoa;
-
-//define as variáveis para raíz da lista 1 e da lista 2
-extern registro* raizListaPessoas;
-extern indice* raizListaIndice;
 
 //estrutura para um registro único utilizada na funcionalidade 6
 typedef struct noRegistroUnico{

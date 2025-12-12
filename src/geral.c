@@ -164,6 +164,33 @@ void imprimirRegistro(int idPessoa, int idadePessoa, int tamNomePessoa, char *no
   }
 }
 
+//função responsavel por adicionar um nó no final da lista de resultados de busca
+void adicionarResultadoBusca(resultadoBusca **raizLista, resultadoBusca **ultimoResultado, registro *reg, long int byteOffset){
+  resultadoBusca *novoResultado = calloc(1, sizeof(resultadoBusca));
+  
+  //aloca memória para o registro dentro do resultado
+  novoResultado->reg = malloc(sizeof(registro));
+  
+  //copia os campos do registro encontrado
+  novoResultado->reg->idPessoa = reg->idPessoa;
+  novoResultado->reg->idadePessoa = reg->idadePessoa;
+  novoResultado->reg->tamanhoNomePessoa = reg->tamanhoNomePessoa;
+  strcpy(novoResultado->reg->nome, reg->nome);
+  novoResultado->reg->tamanhoNomeUsuario = reg->tamanhoNomeUsuario;
+  strcpy(novoResultado->reg->nomeUsuario, reg->nomeUsuario);
+  novoResultado->byteOffset = byteOffset;
+  novoResultado->proxResultado = NULL;
+  
+  //inserção no final da lista
+  if(*raizLista == NULL){
+    *raizLista = novoResultado;
+    *ultimoResultado = novoResultado;
+  } else{
+    (*ultimoResultado)->proxResultado = novoResultado;
+    *ultimoResultado = novoResultado;
+  }
+}
+
 
 resultadoBusca* buscarRegistrosPorCampo(FILE *arqPessoa, indice *vetorIndice, int qtdIndice, long sizeDados, char *nomeCampo, char *valorCampo){
   //inicializa a lista de resultados

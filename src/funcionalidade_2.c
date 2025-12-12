@@ -5,6 +5,10 @@
 #include "../headers/utilidades.h"
 #include "../headers/geral.h"
 
+//define as variáveis para raíz da lista 1 e da lista 2
+extern registro* raizListaPessoas;
+extern indice* raizListaIndice;
+
 
 //FUNCIONALIDADE 2:
 void criarArquivoDados(char *nomeArquivoEntrada, char *nomeArquivoDados, char *nomeArquivoIndice){

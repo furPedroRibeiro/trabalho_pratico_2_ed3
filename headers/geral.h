@@ -2,7 +2,7 @@
 //Aluno 2: Bianca Duarte Batista Lacerda N° USP: 15443221
 
 //inclui as bibliotecas padrão 
-#include "default.h"
+#include "default_and_eds.h"
 
 #ifndef GERAL_H
 #define GERAL_H
@@ -19,5 +19,6 @@ FILE* abrirArquivoComStatus(const char *nomeArquivo, const char *modo);
 void imprimirRegistro(int idPessoa, int idadePessoa, int tamNomePessoa, char *nomePessoa, int tamNomeUsuario, char *nomeUsuario);
 resultadoBusca* buscarRegistrosPorCampo(FILE *arqPessoa, indice *vetorIndice, int qtdIndice, long sizeDados, char *nomeCampo, char *valorCampo);
 void liberarListaResultados(resultadoBusca *raizLista);
+void adicionarResultadoBusca(resultadoBusca **raizLista, resultadoBusca **ultimoResultado, struct registro *reg, long int byteOffset);
 
 #endif

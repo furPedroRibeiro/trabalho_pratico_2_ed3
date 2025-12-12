@@ -1,7 +1,7 @@
 //Aluno 1: Pedro Luis de Alencar Ribeiro N° USP: 15590852
 //Aluno 2: Bianca Duarte Batista Lacerda N° USP: 15443221
 
-#include "default.h"
+#include "default_and_eds.h"
 
 //esse arquivo de cabeçalho é referente ao arquivo utilidades.c, disponibilizado na página da disciplina
 #ifndef UTILIDADES_H
