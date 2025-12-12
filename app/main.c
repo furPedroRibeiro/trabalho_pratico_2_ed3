@@ -1,7 +1,16 @@
 //Aluno 1: Pedro Luis de Alencar Ribeiro N° USP: 15590852
 //Aluno 2: Bianca Duarte Batista Lacerda N° USP: 15443221
 
-#include "../headers/functions.h"
+#include "../headers/funcionalidade_1.h"
+#include "../headers/funcionalidade_2.h"
+#include "../headers/funcionalidade_3.h"
+#include "../headers/funcionalidade_4.h"
+#include "../headers/funcionalidade_5.h"
+#include "../headers/funcionalidade_6.h"
+#include "../headers/funcionalidade_7.h"
+#include "../headers/funcionalidade_8.h"
+#include "../headers/funcionalidade_9.h"
+#include "../headers/funcionalidade_10.h"
 
 //aqui roda a main, que lê a entrada e depois roda um switch case para selecionar a funcionalidade a ser executada
 
