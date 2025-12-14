@@ -7,19 +7,12 @@
 #include "../headers/utilidades.h"
 #include "../headers/geral.h"
 
-//FUNCIONALIDADE 14: Comprimento do caminho da fofoca
-void comprimentoCaminhoFofoca(char *nomeArquivoPessoa, char *nomeArquivoIndice, char *nomeArquivoSegueOrdenado, char *nomeUsuarioQueGerouFofoca) {
+
+//FUNCIONALIDADE 14:
+void comprimentoCaminhoFofoca(char *nomeArquivoPessoa, char *nomeArquivoIndice, char *nomeArquivoSegueOrdenado, char *nomeUsuarioQueGerouFofoca){
     //Remove as aspas do nome do usuário
     char usuario[100];
     strcpy(usuario, nomeUsuarioQueGerouFofoca);
-    if(usuario[0] == '"') {
-        int len = strlen(usuario);
-        memmove(usuario, usuario + 1, len);
-        len = strlen(usuario);
-        if(len > 0 && usuario[len-1] == '"') {
-            usuario[len-1] = '\0';
-        }
-    }
     
     //Abertura dos arquivos
     FILE *arqPessoa = abrirArquivoComStatus(nomeArquivoPessoa, "rb");
@@ -33,7 +26,7 @@ void comprimentoCaminhoFofoca(char *nomeArquivoPessoa, char *nomeArquivoIndice, 
     
     fseek(arquivoIndice, 12, SEEK_SET);
     indice *vetorIndice = malloc(qtdIndice * sizeof(indice));
-    for(int i = 0; i < qtdIndice; i++) {
+    for(int i = 0; i < qtdIndice; i++){
         fread(&vetorIndice[i].idPessoa, sizeof(int), 1, arquivoIndice);
         fread(&vetorIndice[i].byteOffset, sizeof(long int), 1, arquivoIndice);
     }
@@ -47,7 +40,7 @@ void comprimentoCaminhoFofoca(char *nomeArquivoPessoa, char *nomeArquivoIndice, 
     resultadoBusca *resultados = buscarRegistrosPorCampo(arqPessoa, vetorIndice, qtdIndice, sizeDados, NULL, NULL);
     fclose(arqPessoa);
     
-    if(resultados == NULL) {
+    if(resultados == NULL){
         printf("Falha na execução da funcionalidade.\n");
         free(vetorIndice);
         fclose(arqSegueOrdenado);
@@ -57,7 +50,7 @@ void comprimentoCaminhoFofoca(char *nomeArquivoPessoa, char *nomeArquivoIndice, 
     //Conta quantas pessoas existem
     int numVertices = 0;
     resultadoBusca *atual = resultados;
-    while(atual != NULL) {
+    while(atual != NULL){
         numVertices++;
         atual = atual->proxResultado;
     }
@@ -68,7 +61,7 @@ void comprimentoCaminhoFofoca(char *nomeArquivoPessoa, char *nomeArquivoIndice, 
     //Preenche o vetor de vértices
     atual = resultados;
     int idx = 0;
-    while(atual != NULL) {
+    while(atual != NULL){
         vertices[idx].idPessoa = atual->reg->idPessoa;
         strcpy(vertices[idx].nomeUsuario, atual->reg->nomeUsuario);
         vertices[idx].listaAdjacencias = NULL;
@@ -77,9 +70,9 @@ void comprimentoCaminhoFofoca(char *nomeArquivoPessoa, char *nomeArquivoIndice, 
     }
     
     //Ordena o vetor de vértices por nomeUsuario
-    qsort(vertices, numVertices, sizeof(verticeGrafo), comparaVertices11);
+    qsort(vertices, numVertices, sizeof(verticeGrafo), comparaVertices);
     
-    //Carrega todo o arquivo segue ordenado
+    //Carrega todo o arquivo segue ordenado em memória
     int qtdRegistrosSegue;
     fseek(arqSegueOrdenado, 1, SEEK_SET);
     fread(&qtdRegistrosSegue, sizeof(int), 1, arqSegueOrdenado);
@@ -87,7 +80,7 @@ void comprimentoCaminhoFofoca(char *nomeArquivoPessoa, char *nomeArquivoIndice, 
     noSegue *registrosSegue = (noSegue*)calloc(qtdRegistrosSegue, sizeof(noSegue));
     
     fseek(arqSegueOrdenado, 9, SEEK_SET);
-    for(int i = 0; i < qtdRegistrosSegue; i++) {
+    for(int i = 0; i < qtdRegistrosSegue; i++){
         registrosSegue[i].dataInicioQueSegue = malloc(11 * sizeof(char));
         registrosSegue[i].dataFimQueSegue = malloc(11 * sizeof(char));
         
@@ -104,17 +97,17 @@ void comprimentoCaminhoFofoca(char *nomeArquivoPessoa, char *nomeArquivoIndice, 
     fclose(arqSegueOrdenado);
     
     //Constrói as listas de adjacências
-    construirListasAdjacencias11(vertices, numVertices, registrosSegue, qtdRegistrosSegue, resultados);
+    construirListas(vertices, numVertices, registrosSegue, qtdRegistrosSegue, resultados);
     
     //Encontra o índice do usuário que gerou a fofoca
     int indiceOrigem = encontrarIndicePorNome(vertices, numVertices, usuario);
     
-    if(indiceOrigem == -1) {
+    if(indiceOrigem == -1){
         printf("Falha na execução da funcionalidade.\n");
-        liberarGrafo11(vertices, numVertices);
+        liberarGrafo(vertices, numVertices);
         liberarListaResultados(resultados);
         free(vetorIndice);
-        for(int i = 0; i < qtdRegistrosSegue; i++) {
+        for(int i = 0; i < qtdRegistrosSegue; i++){
             free(registrosSegue[i].dataInicioQueSegue);
             free(registrosSegue[i].dataFimQueSegue);
         }
@@ -125,29 +118,32 @@ void comprimentoCaminhoFofoca(char *nomeArquivoPessoa, char *nomeArquivoIndice, 
     //Executa BFS para encontrar o menor caminho de volta à origem
     int comprimento = bfsCiclo(vertices, numVertices, indiceOrigem);
     
-    if(comprimento == -1) {
+    if(comprimento == -1){
         printf("A FOFOCA NAO RETORNOU\n");
     } else {
         printf("%d\n", comprimento);
     }
     
     //Libera memória
-    liberarGrafo11(vertices, numVertices);
+    liberarGrafo(vertices, numVertices);
     liberarListaResultados(resultados);
     free(vetorIndice);
-    for(int i = 0; i < qtdRegistrosSegue; i++) {
+    for(int i = 0; i < qtdRegistrosSegue; i++){
         free(registrosSegue[i].dataInicioQueSegue);
         free(registrosSegue[i].dataFimQueSegue);
     }
     free(registrosSegue);
 }
 
+
+// ======================= FUNÇÕES PARA A FUNCIONALIDADE 14: =======================
+
 //BFS para encontrar ciclo - retorna o comprimento ou -1 se não houver ciclo
-int bfsCiclo(verticeGrafo *vertices, int numVertices, int indiceOrigem) {
+int bfsCiclo(verticeGrafo *vertices, int numVertices, int indiceOrigem){
     int *distancia = malloc(numVertices * sizeof(int));
     int *visitado = malloc(numVertices * sizeof(int));
     
-    for(int i = 0; i < numVertices; i++) {
+    for(int i = 0; i < numVertices; i++){
         distancia[i] = -1;
         visitado[i] = 0;
     }
@@ -158,10 +154,10 @@ int bfsCiclo(verticeGrafo *vertices, int numVertices, int indiceOrigem) {
     arestaGrafo *aresta = vertices[indiceOrigem].listaAdjacencias;
     int primeiraIteracao = 1;
     
-    while(aresta != NULL) {
+    while(aresta != NULL){
         int v = encontrarIndicePorNome(vertices, numVertices, aresta->nomeUsuarioDestino);
         
-        if(v != -1 && !visitado[v]) {
+        if(v != -1 && !visitado[v]){
             distancia[v] = 1;
             visitado[v] = 1;
             enfileirar(fila, v);
@@ -172,20 +168,20 @@ int bfsCiclo(verticeGrafo *vertices, int numVertices, int indiceOrigem) {
     
     int menorCiclo = -1;
     
-    while(!filaVazia(fila)) {
+    while(!filaVazia(fila)){
         int u = desenfileirar(fila);
         
         //Percorre as arestas em ordem alfabética
         arestaGrafo *arestaAtual = vertices[u].listaAdjacencias;
         
-        while(arestaAtual != NULL) {
+        while(arestaAtual != NULL){
             int v = encontrarIndicePorNome(vertices, numVertices, arestaAtual->nomeUsuarioDestino);
             
-            if(v != -1) {
+            if(v != -1){
                 //Se encontrou a origem, temos um ciclo
-                if(v == indiceOrigem) {
+                if(v == indiceOrigem){
                     int ciclo = distancia[u] + 1;
-                    if(menorCiclo == -1 || ciclo < menorCiclo) {
+                    if(menorCiclo == -1 || ciclo < menorCiclo){
                         menorCiclo = ciclo;
                     }
                     //Encontrou o primeiro ciclo, retorna
@@ -196,7 +192,7 @@ int bfsCiclo(verticeGrafo *vertices, int numVertices, int indiceOrigem) {
                 }
                 
                 //Se ainda não visitou, adiciona à fila
-                if(!visitado[v]) {
+                if(!visitado[v]){
                     distancia[v] = distancia[u] + 1;
                     visitado[v] = 1;
                     enfileirar(fila, v);

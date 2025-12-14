@@ -21,4 +21,29 @@ resultadoBusca* buscarRegistrosPorCampo(FILE *arqPessoa, indice *vetorIndice, in
 void liberarListaResultados(resultadoBusca *raizLista);
 void adicionarResultadoBusca(resultadoBusca **raizLista, resultadoBusca **ultimoResultado, struct registro *reg, long int byteOffset);
 
+
+//Estrutura para representar uma aresta do grafo (lista de adjacências)
+typedef struct arestaGrafo{
+    char nomeUsuarioDestino[100];  //Nome do usuário que é seguido
+    char dataInicio[11];            //Data de início que segue
+    char dataFim[11];               //Data de fim que segue
+    char grauAmizade;               //Grau de amizade
+    struct arestaGrafo *proxAresta; //Próxima aresta na lista
+} arestaGrafo;
+
+//Estrutura para representar um vértice do grafo
+typedef struct verticeGrafo{
+    int idPessoa;                   //ID da pessoa
+    char nomeUsuario[100];          //Nome do usuário (pessoa que segue)
+    arestaGrafo *listaAdjacencias;  //Lista de adjacências (quem essa pessoa segue)
+} verticeGrafo;
+
+
+int comparaVertices(const void *a, const void *b);
+int comparaArestas(const void *a, const void *b);
+void construirListas(verticeGrafo *vertices, int numVertices, noSegue *registrosSegue, int qtdRegistrosSegue, resultadoBusca *resultados);
+char* buscarNomeUsuarioPorId(int idPessoa, resultadoBusca *resultados);
+void imprimirGrafo(verticeGrafo *vertices, int numVertices);
+void liberarGrafo(verticeGrafo *vertices, int numVertices);
+
 #endif

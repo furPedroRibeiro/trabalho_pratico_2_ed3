@@ -340,3 +340,161 @@ void liberarListaResultados(resultadoBusca *raizLista){
     atual = proximo;
   }
 }
+
+
+// ======================= FUNÇÕES PARA AS FUNCIONALIDADES 11, 12, 13 E 14: =======================
+
+//Função de comparação para ordenar vértices por nomeUsuario
+int comparaVertices(const void *a, const void *b){
+    const verticeGrafo *vA = (const verticeGrafo*)a;
+    const verticeGrafo *vB = (const verticeGrafo*)b;
+    return strcmp(vA->nomeUsuario, vB->nomeUsuario);
+}
+
+//Função de comparação para ordenar arestas por nomeUsuario e dataInicio
+int comparaArestas(const void *a, const void *b){
+    const arestaGrafo *aA = (const arestaGrafo*)a;
+    const arestaGrafo *aB = (const arestaGrafo*)b;
+    
+    int cmpNome = strcmp(aA->nomeUsuarioDestino, aB->nomeUsuarioDestino);
+    if(cmpNome != 0){
+        return cmpNome;
+    }
+    
+    //Se nomes iguais, ordena por dataInicio
+    return strcmp(aA->dataInicio, aB->dataInicio);
+}
+
+//Função que busca o nomeUsuario de uma pessoa pelo seu ID
+char* buscarNomeUsuarioPorId(int idPessoa, resultadoBusca *resultados){
+    resultadoBusca *atual = resultados;
+    while(atual != NULL){
+        if(atual->reg->idPessoa == idPessoa){
+            return atual->reg->nomeUsuario;
+        }
+        atual = atual->proxResultado;
+    }
+    return NULL;
+}
+
+//Função que constrói as listas de adjacências do grafo
+void construirListas(verticeGrafo *vertices, int numVertices, noSegue *registrosSegue, int qtdRegistrosSegue, resultadoBusca *resultados){
+    
+    //Para cada vértice (pessoa que segue)
+    for(int i = 0; i < numVertices; i++){
+        int idPessoaQueSegue = vertices[i].idPessoa;
+        
+        //Conta quantas pessoas esse usuário segue (não removidas)
+        int numArestas = 0;
+        for(int j = 0; j < qtdRegistrosSegue; j++){
+            if(registrosSegue[j].idPessoaQueSegue == idPessoaQueSegue && 
+               registrosSegue[j].removido[0] == '0'){
+                numArestas++;
+            }
+        }
+        
+        if(numArestas == 0){
+            vertices[i].listaAdjacencias = NULL;
+            continue;
+        }
+        
+        //Aloca vetor temporário para ordenar as arestas
+        arestaGrafo *arestasTemp = malloc(numArestas * sizeof(arestaGrafo));
+        int idxAresta = 0;
+        
+        //Preenche o vetor de arestas
+        for(int j = 0; j < qtdRegistrosSegue; j++){
+            if(registrosSegue[j].idPessoaQueSegue == idPessoaQueSegue && 
+               registrosSegue[j].removido[0] == '0'){
+                
+                //Busca o nomeUsuario da pessoa seguida
+                char *nomeUsuarioSeguido = buscarNomeUsuarioPorId(registrosSegue[j].idPessoaQueESeguida, resultados);
+                
+                if(nomeUsuarioSeguido != NULL){
+                    strcpy(arestasTemp[idxAresta].nomeUsuarioDestino, nomeUsuarioSeguido);
+                    strcpy(arestasTemp[idxAresta].dataInicio, registrosSegue[j].dataInicioQueSegue);
+                    strcpy(arestasTemp[idxAresta].dataFim, registrosSegue[j].dataFimQueSegue);
+                    arestasTemp[idxAresta].grauAmizade = registrosSegue[j].grauAmizade[0];
+                    arestasTemp[idxAresta].proxAresta = NULL;
+                    idxAresta++;
+                }
+            }
+        }
+        
+        numArestas = idxAresta; //Atualiza caso algum nome não foi encontrado
+        
+        //Ordena as arestas por nomeUsuario e dataInicio
+        qsort(arestasTemp, numArestas, sizeof(arestaGrafo), comparaArestas);
+        
+        //Constrói a lista encadeada de arestas
+        for(int k = 0; k < numArestas; k++){
+            arestaGrafo *novaAresta = malloc(sizeof(arestaGrafo));
+            strcpy(novaAresta->nomeUsuarioDestino, arestasTemp[k].nomeUsuarioDestino);
+            strcpy(novaAresta->dataInicio, arestasTemp[k].dataInicio);
+            strcpy(novaAresta->dataFim, arestasTemp[k].dataFim);
+            novaAresta->grauAmizade = arestasTemp[k].grauAmizade;
+            novaAresta->proxAresta = NULL;
+            
+            //Adiciona na lista
+            if(vertices[i].listaAdjacencias == NULL){
+                vertices[i].listaAdjacencias = novaAresta;
+            } else {
+                //Encontra o último nó da lista
+                arestaGrafo *ultimo = vertices[i].listaAdjacencias;
+                while(ultimo->proxAresta != NULL){
+                    ultimo = ultimo->proxAresta;
+                }
+                ultimo->proxAresta = novaAresta;
+            }
+        }
+        
+        free(arestasTemp);
+    }
+}
+
+void imprimirGrafo(verticeGrafo *vertices, int numVertices){
+    for(int i = 0; i < numVertices; i++){
+        if(vertices[i].listaAdjacencias == NULL){
+            continue;
+        }
+        
+        arestaGrafo *aresta = vertices[i].listaAdjacencias;
+        while(aresta != NULL){
+            printf("%s, %s, ", vertices[i].nomeUsuario, aresta->nomeUsuarioDestino);
+            
+            if(strcmp(aresta->dataInicio, "$$$$$$$$$$") == 0){
+                printf("NULO, ");
+            } else {
+                printf("%s, ", aresta->dataInicio);
+            }
+            
+            if(strcmp(aresta->dataFim, "$$$$$$$$$$") == 0){
+                printf("NULO, ");
+            } else {
+                printf("%s, ", aresta->dataFim);
+            }
+            
+            if(aresta->grauAmizade == '$'){
+                printf("NULO\n");
+            } else {
+                printf("%c\n", aresta->grauAmizade);
+            }
+            
+            aresta = aresta->proxAresta;
+        }
+        
+        printf("\n");
+    }
+}
+
+void liberarGrafo(verticeGrafo *vertices, int numVertices){
+    for(int i = 0; i < numVertices; i++){
+        arestaGrafo *aresta = vertices[i].listaAdjacencias;
+        while(aresta != NULL){
+            arestaGrafo *proxima = aresta->proxAresta;
+            free(aresta);
+            aresta = proxima;
+        }
+    }
+    free(vertices);
+}

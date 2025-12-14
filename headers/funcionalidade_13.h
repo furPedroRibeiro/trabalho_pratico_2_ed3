@@ -2,44 +2,55 @@
 //Aluno 2: Bianca Duarte Batista Lacerda Nº USP: 15443221
 
 #include "default_and_eds.h"
-#include "funcionalidade_11.h"
+#include "geral.h"
 
 #ifndef FUNCIONALIDADE_13_H
 #define FUNCIONALIDADE_13_H
 
-//Estrutura para o nó da fila (BFS)
-typedef struct noFila {
-    int indiceVertice;
-    struct noFila *proximo;
+//Estrutura para representar um nó da fila usada no BFS
+typedef struct noFila{
+    int idxVertice;
+    struct noFila *prox;
 } noFila;
 
-//Estrutura para a fila
-typedef struct {
+//Estrutura para representar uma fila
+typedef struct fila{
     noFila *inicio;
     noFila *fim;
-} Fila;
+} fila;
 
-//Estrutura para armazenar o caminho
-typedef struct nodoCaminho {
-    char nomeUsuarioQueSegue[100];
-    char nomeUsuarioQueESeguida[100];
+//Typedef para compatibilidade com código existente
+typedef fila Fila;
+
+//Estrutura para ordenar arestas durante o BFS
+typedef struct arestaOrdenada{
+    int idxDestino;
+    char nomeUsuarioDestino[100];
     char dataInicio[11];
     char dataFim[11];
     char grauAmizade;
-    struct nodoCaminho *proximo;
-} nodoCaminho;
+    arestaGrafo *arestaOriginal;
+} arestaOrdenada;
 
-//Protótipos das funções da funcionalidade 13
+//Função principal
+void encontrarCaminhosMaisCurtos(char *nomeArquivoPessoa, char *nomeArquivoIndice, char *nomeArquivoSegueOrdenado, char *nomeUsuarioCelebridade);
+
+//Alias para compatibilidade com main.c
 void caminhoMaisCurtoCelebridade(char *nomeArquivoPessoa, char *nomeArquivoIndice, char *nomeArquivoSegueOrdenado, char *nomeUsuarioCelebridade);
-Fila* criarFila();
-void enfileirar(Fila *fila, int indiceVertice);
-int desenfileirar(Fila *fila);
-int filaVazia(Fila *fila);
-void liberarFila(Fila *fila);
-int encontrarIndicePorNome(verticeGrafo *vertices, int numVertices, char *nomeUsuario);
-nodoCaminho* reconstruirCaminho(int *predecessores, arestaGrafo **arestasUsadas, verticeGrafo *vertices, int indiceOrigem, int indiceDestino);
-void imprimirCaminho(nodoCaminho *caminho);
-void liberarCaminho(nodoCaminho *caminho);
+
+//Funções auxiliares para a fila
+fila* criarFila();
+void enfileirar(fila *f, int indiceVertice);
+int desenfileirar(fila *f);
+int filaVazia(fila *f);
+void liberarFila(fila *f);
+
+//Funções auxiliares do algoritmo (exportadas para uso em outras funcionalidades)
+int buscarIndicePorNome(verticeGrafo *vertices, int numVertices, char *nomeUsuario);
+int encontrarIndicePorNome(verticeGrafo *vertices, int numVertices, char *nomeUsuario); //Alias para compatibilidade
+void imprimirCaminho(int *predecessores, arestaGrafo **arestasUsadas, verticeGrafo *vertices, int indiceOrigem, int indiceDestino);
 int comparaArestasOrdenadas(const void *a, const void *b);
+int comparaArestasGrafo(arestaGrafo *a, arestaGrafo *b);
+void construirGrafoAtivo(verticeGrafo *vertices, int numVertices, noSegue *registrosSegue, int qtdRegistrosSegue, resultadoBusca *resultados);
 
 #endif

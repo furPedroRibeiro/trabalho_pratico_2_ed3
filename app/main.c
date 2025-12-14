@@ -188,14 +188,10 @@ int main(){
         nomeArquivoIndicePessoa = strtok(NULL, " ");
         // Obtém nome do arquivo ordenado de segue
         nomeArquivoOrdenadoSegue = strtok(NULL, " ");
-        // Obtém o restante da linha (nome da celebridade com aspas)
-        char *restoDaLinha = strtok(NULL, "");
-        // Remove espaços iniciais se houver
-        while(restoDaLinha && *restoDaLinha == ' ') {
-          restoDaLinha++;
-        }
+        // Obtém o nome do Usuario
+        char *nomeUsuario = strtok(NULL, "");
         // Chama a funcionalidade 13
-        caminhoMaisCurtoCelebridade(nomeArquivoEntradaPessoa, nomeArquivoIndicePessoa, nomeArquivoOrdenadoSegue, restoDaLinha);
+        encontrarCaminhosMaisCurtos(nomeArquivoEntradaPessoa, nomeArquivoIndicePessoa, nomeArquivoOrdenadoSegue, nomeUsuario);
       }
       break;
     case 14:
@@ -206,14 +202,10 @@ int main(){
         nomeArquivoIndicePessoa = strtok(NULL, " ");
         // Obtém nome do arquivo ordenado de segue
         nomeArquivoOrdenadoSegue = strtok(NULL, " ");
-        // Obtém o restante da linha (nome do usuário com aspas)
-        char *restoDaLinha = strtok(NULL, "");
-        // Remove espaços iniciais se houver
-        while(restoDaLinha && *restoDaLinha == ' ') {
-          restoDaLinha++;
-        }
+        // Obtém o nome do usuario
+        char *nomeUsuario = strtok(NULL, "");
         // Chama a funcionalidade 14
-        comprimentoCaminhoFofoca(nomeArquivoEntradaPessoa, nomeArquivoIndicePessoa, nomeArquivoOrdenadoSegue, restoDaLinha);
+        comprimentoCaminhoFofoca(nomeArquivoEntradaPessoa, nomeArquivoIndicePessoa, nomeArquivoOrdenadoSegue, nomeUsuario);
       }
       break;
     //caso o usuário digite alguma opção que não é de 1 a 14

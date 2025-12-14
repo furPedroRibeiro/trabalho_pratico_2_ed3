@@ -8,10 +8,12 @@
 
 //FUNCIONALIDADE 12:
 void gerarGrafoTransposto(char *nomeArquivoPessoa, char *nomeArquivoIndice, char *nomeArquivoSegueOrdenado){
+    //Abertura dos arquivos
     FILE *arqPessoa = abrirArquivoComStatus(nomeArquivoPessoa, "rb");
     FILE *arquivoIndice = abrirArquivoComStatus(nomeArquivoIndice, "rb");
     FILE *arqSegueOrdenado = abrirArquivoComStatus(nomeArquivoSegueOrdenado, "rb");
     
+    //Carrega o índice em memória
     fseek(arquivoIndice, 0, SEEK_END);
     long sizeIndice = ftell(arquivoIndice) - 12;
     int qtdIndice = sizeIndice / (sizeof(int) + sizeof(long int));
@@ -24,9 +26,11 @@ void gerarGrafoTransposto(char *nomeArquivoPessoa, char *nomeArquivoIndice, char
     }
     fclose(arquivoIndice);
     
+    //Obtém o tamanho do arquivo pessoa
     fseek(arqPessoa, 0, SEEK_END);
     long sizeDados = ftell(arqPessoa);
     
+    //Busca todos os registros não removidos
     resultadoBusca *resultados = buscarRegistrosPorCampo(arqPessoa, vetorIndice, qtdIndice, sizeDados, NULL, NULL);
     fclose(arqPessoa);
     
@@ -37,6 +41,7 @@ void gerarGrafoTransposto(char *nomeArquivoPessoa, char *nomeArquivoIndice, char
         return;
     }
     
+    //Conta quantas pessoas existem
     int numVertices = 0;
     resultadoBusca *atual = resultados;
     while(atual != NULL){
@@ -44,8 +49,10 @@ void gerarGrafoTransposto(char *nomeArquivoPessoa, char *nomeArquivoIndice, char
         atual = atual->proxResultado;
     }
     
+    //Cria o vetor de vértices
     verticeGrafo *vertices = malloc(numVertices * sizeof(verticeGrafo));
     
+    //Preenche o vetor de vértices
     atual = resultados;
     int idx = 0;
     while(atual != NULL){
@@ -56,8 +63,10 @@ void gerarGrafoTransposto(char *nomeArquivoPessoa, char *nomeArquivoIndice, char
         atual = atual->proxResultado;
     }
     
-    qsort(vertices, numVertices, sizeof(verticeGrafo), comparaVertices12);
+    //Ordena o vetor de vértices por nomeUsuario
+    qsort(vertices, numVertices, sizeof(verticeGrafo), comparaVertices);
     
+    //Carrega todo o arquivo segue ordenado em memória
     int qtdRegistrosSegue;
     fseek(arqSegueOrdenado, 1, SEEK_SET);
     fread(&qtdRegistrosSegue, sizeof(int), 1, arqSegueOrdenado);
@@ -81,11 +90,14 @@ void gerarGrafoTransposto(char *nomeArquivoPessoa, char *nomeArquivoIndice, char
     }
     fclose(arqSegueOrdenado);
     
+    //Constrói as listas de adjacências transpostas
     construirListasAdjacenciasTranspostas(vertices, numVertices, registrosSegue, qtdRegistrosSegue, resultados);
     
-    imprimirGrafo12(vertices, numVertices);
+    //Imprime o grafo
+    imprimirGrafo(vertices, numVertices);
     
-    liberarGrafo12(vertices, numVertices);
+    //Libera memória
+    liberarGrafo(vertices, numVertices);
     liberarListaResultados(resultados);
     free(vetorIndice);
     for(int i = 0; i < qtdRegistrosSegue; i++){
@@ -95,39 +107,17 @@ void gerarGrafoTransposto(char *nomeArquivoPessoa, char *nomeArquivoIndice, char
     free(registrosSegue);
 }
 
-int comparaVertices12(const void *a, const void *b){
-    const verticeGrafo *vA = (const verticeGrafo*)a;
-    const verticeGrafo *vB = (const verticeGrafo*)b;
-    return strcmp(vA->nomeUsuario, vB->nomeUsuario);
-}
 
-int comparaArestas12(const void *a, const void *b){
-    const arestaGrafo *aA = (const arestaGrafo*)a;
-    const arestaGrafo *aB = (const arestaGrafo*)b;
-    
-    int cmpNome = strcmp(aA->nomeUsuarioDestino, aB->nomeUsuarioDestino);
-    if(cmpNome != 0){
-        return cmpNome;
-    }
-    
-    return strcmp(aA->dataInicio, aB->dataInicio);
-}
+// ======================= FUNÇÕES PARA A FUNCIONALIDADE 12: =======================
 
-char* buscarNomeUsuarioPorId12(int idPessoa, resultadoBusca *resultados){
-    resultadoBusca *atual = resultados;
-    while(atual != NULL){
-        if(atual->reg->idPessoa == idPessoa){
-            return atual->reg->nomeUsuario;
-        }
-        atual = atual->proxResultado;
-    }
-    return NULL;
-}
-
+//Função que constrói as listas de adjacências transpostas (inverte direção das arestas)
 void construirListasAdjacenciasTranspostas(verticeGrafo *vertices, int numVertices, noSegue *registrosSegue, int qtdRegistrosSegue, resultadoBusca *resultados){
+    
+    //Para cada vértice (pessoa que É seguida)
     for(int i = 0; i < numVertices; i++){
         int idPessoaQueESeguida = vertices[i].idPessoa;
         
+        //Conta quantas pessoas seguem este usuário (não removidas)
         int numArestas = 0;
         for(int j = 0; j < qtdRegistrosSegue; j++){
             if(registrosSegue[j].idPessoaQueESeguida == idPessoaQueESeguida && 
@@ -141,14 +131,17 @@ void construirListasAdjacenciasTranspostas(verticeGrafo *vertices, int numVertic
             continue;
         }
         
+        //Aloca vetor temporário para ordenar as arestas
         arestaGrafo *arestasTemp = malloc(numArestas * sizeof(arestaGrafo));
         int idxAresta = 0;
         
+        //Preenche o vetor de arestas
         for(int j = 0; j < qtdRegistrosSegue; j++){
             if(registrosSegue[j].idPessoaQueESeguida == idPessoaQueESeguida && 
                registrosSegue[j].removido[0] == '0'){
                 
-                char *nomeUsuarioQueSegue = buscarNomeUsuarioPorId12(registrosSegue[j].idPessoaQueSegue, resultados);
+                //Busca o nomeUsuario da pessoa que segue (direção invertida)
+                char *nomeUsuarioQueSegue = buscarNomeUsuarioPorId(registrosSegue[j].idPessoaQueSegue, resultados);
                 
                 if(nomeUsuarioQueSegue != NULL){
                     strcpy(arestasTemp[idxAresta].nomeUsuarioDestino, nomeUsuarioQueSegue);
@@ -161,10 +154,12 @@ void construirListasAdjacenciasTranspostas(verticeGrafo *vertices, int numVertic
             }
         }
         
-        numArestas = idxAresta;
+        numArestas = idxAresta; //Atualiza caso algum nome não foi encontrado
         
-        qsort(arestasTemp, numArestas, sizeof(arestaGrafo), comparaArestas12);
+        //Ordena as arestas por nomeUsuario e dataInicio
+        qsort(arestasTemp, numArestas, sizeof(arestaGrafo), comparaArestas);
         
+        //Constrói a lista encadeada de arestas
         for(int k = 0; k < numArestas; k++){
             arestaGrafo *novaAresta = malloc(sizeof(arestaGrafo));
             strcpy(novaAresta->nomeUsuarioDestino, arestasTemp[k].nomeUsuarioDestino);
@@ -173,9 +168,11 @@ void construirListasAdjacenciasTranspostas(verticeGrafo *vertices, int numVertic
             novaAresta->grauAmizade = arestasTemp[k].grauAmizade;
             novaAresta->proxAresta = NULL;
             
+            //Adiciona na lista
             if(vertices[i].listaAdjacencias == NULL){
                 vertices[i].listaAdjacencias = novaAresta;
             } else {
+                //Encontra o último nó da lista
                 arestaGrafo *ultimo = vertices[i].listaAdjacencias;
                 while(ultimo->proxAresta != NULL){
                     ultimo = ultimo->proxAresta;
@@ -186,51 +183,4 @@ void construirListasAdjacenciasTranspostas(verticeGrafo *vertices, int numVertic
         
         free(arestasTemp);
     }
-}
-
-void imprimirGrafo12(verticeGrafo *vertices, int numVertices){
-    for(int i = 0; i < numVertices; i++){
-        if(vertices[i].listaAdjacencias == NULL){
-            continue;
-        }
-        
-        arestaGrafo *aresta = vertices[i].listaAdjacencias;
-        while(aresta != NULL){
-            printf("%s, %s, ", vertices[i].nomeUsuario, aresta->nomeUsuarioDestino);
-            
-            if(strcmp(aresta->dataInicio, "$$$$$$$$$$") == 0){
-                printf("NULO, ");
-            } else {
-                printf("%s, ", aresta->dataInicio);
-            }
-            
-            if(strcmp(aresta->dataFim, "$$$$$$$$$$") == 0){
-                printf("NULO, ");
-            } else {
-                printf("%s, ", aresta->dataFim);
-            }
-            
-            if(aresta->grauAmizade == '$'){
-                printf("NULO\n");
-            } else {
-                printf("%c\n", aresta->grauAmizade);
-            }
-            
-            aresta = aresta->proxAresta;
-        }
-        
-        printf("\n");
-    }
-}
-
-void liberarGrafo12(verticeGrafo *vertices, int numVertices){
-    for(int i = 0; i < numVertices; i++){
-        arestaGrafo *aresta = vertices[i].listaAdjacencias;
-        while(aresta != NULL){
-            arestaGrafo *proxima = aresta->proxAresta;
-            free(aresta);
-            aresta = proxima;
-        }
-    }
-    free(vertices);
 }
