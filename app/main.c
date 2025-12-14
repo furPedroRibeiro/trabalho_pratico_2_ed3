@@ -11,6 +11,10 @@
 #include "../headers/funcionalidade_8.h"
 #include "../headers/funcionalidade_9.h"
 #include "../headers/funcionalidade_10.h"
+#include "../headers/funcionalidade_11.h"
+#include "../headers/funcionalidade_12.h"
+#include "../headers/funcionalidade_13.h"
+#include "../headers/funcionalidade_14.h"
 
 //aqui roda a main, que lê a entrada e depois roda um switch case para selecionar a funcionalidade a ser executada
 
@@ -156,7 +160,63 @@ int main(){
       //chama a funcionalidade 10
       juncaoArquivos(nomeArquivoEntradaPessoa, nomeArquivoIndicePessoa, nomeArquivoOrdenadoSegue, r);
       break;
-    //caso o usuário digite alguma opção que não é de 1 a 10
+    case 11:
+      // Obtém nome do arquivo de entrada pessoa(bin)
+      nomeArquivoEntradaPessoa = strtok(NULL, " ");
+      // Obtém nome do arquivo de índice
+      nomeArquivoIndicePessoa = strtok(NULL, " ");
+      // Obtém nome do arquivo ordenado de segue
+      nomeArquivoOrdenadoSegue = strtok(NULL, " ");
+      // Chama a funcionalidade 11
+      gerarGrafo(nomeArquivoEntradaPessoa, nomeArquivoIndicePessoa, nomeArquivoOrdenadoSegue);
+      break;
+    case 12:
+      // Obtém nome do arquivo de entrada pessoa(bin)
+      nomeArquivoEntradaPessoa = strtok(NULL, " ");
+      // Obtém nome do arquivo de índice
+      nomeArquivoIndicePessoa = strtok(NULL, " ");
+      // Obtém nome do arquivo ordenado de segue
+      nomeArquivoOrdenadoSegue = strtok(NULL, " ");
+      // Chama a funcionalidade 12
+      gerarGrafoTransposto(nomeArquivoEntradaPessoa, nomeArquivoIndicePessoa, nomeArquivoOrdenadoSegue);
+      break;
+    case 13:
+      {
+        // Obtém nome do arquivo de entrada pessoa(bin)
+        nomeArquivoEntradaPessoa = strtok(NULL, " ");
+        // Obtém nome do arquivo de índice
+        nomeArquivoIndicePessoa = strtok(NULL, " ");
+        // Obtém nome do arquivo ordenado de segue
+        nomeArquivoOrdenadoSegue = strtok(NULL, " ");
+        // Obtém o restante da linha (nome da celebridade com aspas)
+        char *restoDaLinha = strtok(NULL, "");
+        // Remove espaços iniciais se houver
+        while(restoDaLinha && *restoDaLinha == ' ') {
+          restoDaLinha++;
+        }
+        // Chama a funcionalidade 13
+        caminhoMaisCurtoCelebridade(nomeArquivoEntradaPessoa, nomeArquivoIndicePessoa, nomeArquivoOrdenadoSegue, restoDaLinha);
+      }
+      break;
+    case 14:
+      {
+        // Obtém nome do arquivo de entrada pessoa(bin)
+        nomeArquivoEntradaPessoa = strtok(NULL, " ");
+        // Obtém nome do arquivo de índice
+        nomeArquivoIndicePessoa = strtok(NULL, " ");
+        // Obtém nome do arquivo ordenado de segue
+        nomeArquivoOrdenadoSegue = strtok(NULL, " ");
+        // Obtém o restante da linha (nome do usuário com aspas)
+        char *restoDaLinha = strtok(NULL, "");
+        // Remove espaços iniciais se houver
+        while(restoDaLinha && *restoDaLinha == ' ') {
+          restoDaLinha++;
+        }
+        // Chama a funcionalidade 14
+        comprimentoCaminhoFofoca(nomeArquivoEntradaPessoa, nomeArquivoIndicePessoa, nomeArquivoOrdenadoSegue, restoDaLinha);
+      }
+      break;
+    //caso o usuário digite alguma opção que não é de 1 a 14
     default: 
       printf("Opcao invalida");
   }

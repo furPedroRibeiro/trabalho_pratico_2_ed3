@@ -336,7 +336,7 @@ void liberarListaResultados(resultadoBusca *raizLista){
   resultadoBusca *atual = raizLista;
   while (atual != NULL){
     resultadoBusca *proximo = atual->proxResultado;
-    free(atual);
+    free(atual->reg);
     atual = proximo;
   }
 }
